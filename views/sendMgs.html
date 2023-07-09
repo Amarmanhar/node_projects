@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>send Message</title>
+</head>
+<body>
+    <h2>Send Message</h2>
+    <form id="message-form">
+      <textarea id="message-input" rows="4" cols="50" required></textarea>
+      <br>
+      <button type="submit">Send</button>
+    </form>
+
+    <script>
+        const msgForm = document.querySelector('#message-form');
+         msgForm.addEventListener('onsubmit', function(event){
+            event.preventDefault();
+            // get the enters message
+            const msgInput = document.querySelector('#message-input');
+            const message = msgInput.value
+            
+            fetch('/message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message })
+         })
+
+         messageInput.value = '';
+
+    });
+    </script>
+</body>
+</html>
