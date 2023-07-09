@@ -25,23 +25,86 @@
 // app.listen(3000);
 
 // const http = require('http');
+// const express = require('express');
+
+// const bodyParser = require("body-parser");
+
+// const app = express();
+// const adminRouter = require('./routes/admin');
+// const shopRouter = require('./routes/shop');
+
+// app.use(bodyParser.urlencoded({extended : false}))
+
+// app.use(adminRouter);
+// app.use(shopRouter);
+
+// app.use((req,res,next)=>{
+//    res.status(404).send('<h1> Page Not Found </h1>')
+// })
+
+// //  const server = http.createServer(app);
+// //  server.listen(3000);
+// app.listen(3000);
+
+// const http = require('http');
 const express = require('express');
+const fs = require('fs');
 
 const bodyParser = require("body-parser");
-
+const path = require('path');
 const app = express();
-const adminRouter = require('./routes/admin');
-const shopRouter = require('./routes/shop');
+// const adminRouter = require('./routes/admin');
+// const shopRouter = require('./routes/shop');
+const loginRouter = require('./routes/login');
 
-app.use(bodyParser.urlencoded({extended : false}))
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended : true}))
 
-app.use(adminRouter);
-app.use(shopRouter);
 
-app.use((req,res,next)=>{
-   res.status(404).send('<h1> Page Not Found </h1>')
+//app.use(loginRouter);
+app.get('/', (req, res) =>{
+
+   fs.readFile("username.txt", (err , data)=>{
+      if( err){
+         console.log(err);
+         data = 'not exist';
+      }
+      res.send(`${data}
+      <form action="/" method ="POST" onSubmit ="document.getElementById('username').value = localStorage.getItem('username')">
+      <input type="text" name="message" id="message">
+      <input type="hidden" name ='username' id="username">
+      <br>
+      <button type="submit">Send</button>
+       </form>
+  `);
+   })
+  
+});
+
+app.post('/', (req, res, next) =>{
+   console.log(req.body.username);
+   console.log(req.body.message);
+
+   fs.writeFile('username.txt', `${req.body.username} : ${req.body.message}`, {flag: 'a'},(err)=>{
+                    err ? console.log(err): res.redirect('/')
+              }
+   );
+});
+
+app.get("/login" , (req, res,)=>{
+
+   res.send(`
+         <form action="/login" method="POST" onSubmit="localStorage.setItem('username',document.getElementById('username').value)">
+         <input type="text" placeholder="enter username" id="username">
+         <br>
+         <button type="submit">Login</button>
+         </form>         
+   `)
 })
 
-//  const server = http.createServer(app);
-//  server.listen(3000);
+app.post('/login', (req, res)=>{
+   const username = req.body.username;
+   console.log(`username ${username}`);
+   res.redirect('/');
+})
 app.listen(3000);
